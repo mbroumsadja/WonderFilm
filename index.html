@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Mon Cinéma Local</title>
+    <style>
+        body { background: #111; color: white; text-align: center; font-family: sans-serif; }
+        video { width: 80%; max-width: 800px; border: 2px solid #333; margin-top: 20px; }
+        .film-list { display: flex; flex-wrap: wrap; justify-content: center; margin-bottom: 20px; }
+        .film-item { background: #333; padding: 10px; margin: 5px; cursor: pointer; border-radius: 5px; }
+        .film-item:hover { background: #555; }
+    </style>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <h1>Streaming Local</h1>
+    <div id="film-list" class="film-list"></div>
+    <video id="video-player" controls preload="none" autoplay>
+        Votre navigateur ne supporte pas la lecture vidéo.
+    </video>
+
+    <script>
+        const filmList = document.getElementById('film-list');
+        const videoPlayer = document.getElementById('video-player');
+
+        // Charger la liste des films
+        fetch('/films')
+            .then(response => response.json())
+            .then(films => {
+                films.forEach(film => {
+                    const filmItem = document.createElement('div');
+                    filmItem.className = 'film-item';
+                    filmItem.textContent = `${film.folder}: ${film.name}`;
+                    filmItem.onclick = () => {
+                        const videoSource = `/play?path=${encodeURIComponent(film.path)}`;
+                        videoPlayer.src = videoSource;
+                        videoPlayer.load();
+                    };
+                    filmList.appendChild(filmItem);
+                });
+            })
+            .catch(error => console.error('Erreur lors du chargement des films:', error));
+    </script>
+</body>
+</html>
